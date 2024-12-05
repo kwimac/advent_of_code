@@ -65,7 +65,7 @@ def task_2(data: Iterable[list[int]]) -> int:
 
 
 if __name__ == "__main__":
-    # with open("data/example_02.txt", "r", encoding="utf-8") as _file:
+    # with open("2024/data/example_02.txt", "r", encoding="utf-8") as _file:
     with open("2024/data/input_02.txt", "r", encoding="utf-8") as _file:
         data_ = (list(map(int, line.strip().split())) for line in _file)
         # print(task_1(data_))

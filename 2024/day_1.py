@@ -20,7 +20,7 @@ def task_2(l1: list[int], l2: list[int]) -> int:
 
 
 if __name__ == "__main__":
-    # with open("data/example_01.txt", "r", encoding="utf-8") as _file:
+    # with open("2024/data/example_01.txt", "r", encoding="utf-8") as _file:
     with open("2024/data/input_01.txt", "r", encoding="utf-8") as _file:
         list_1, list_2 = zip(*(map(int, line.strip().split()) for line in _file))
     # print(task_1(list_1, list_2))
