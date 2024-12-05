@@ -34,7 +34,7 @@ def task_2(data: list[str]) -> int:
 
 if __name__ == "__main__":
     # with open("data/example_03.txt", "r", encoding="utf-8") as _file:
-    with open("data/input_03.txt", "r", encoding="utf-8", newline='\r') as _file:
+    with open("2024/data/input_03.txt", "r", encoding="utf-8", newline='\r') as _file:
         data_ = _file.read().strip()
         # print(task_1(data_))
         print(task_2(data_))
