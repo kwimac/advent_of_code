@@ -38,7 +38,7 @@ def task_2(data: list[str]) -> int:
     n, m = len(data), len(data[0])
     steps = [(0,-1), (1,0), (0,1), (-1,0)]
 
-    def _traverse(s_x: int, s_y: int, s_ii: int) -> bool:
+    def _creates_loop(s_x: int, s_y: int, s_ii: int) -> bool:
         bounce_cache = defaultdict(set)
         s_step = steps[s_ii]
         while 0<=s_y<n and 0<=s_x<m:
@@ -59,33 +59,27 @@ def task_2(data: list[str]) -> int:
 
     ii = 0
     step = steps[ii]
-    counter = 0
+    postions = set()
     x,y = _find_start(data)
-    x += step[0]
-    y += step[1]
-    while 0<=y<n and 0<=x<m:
-        if data[y][x] == "#":
-            x -= step[0]
-            y -= step[1]
+    while True:
+        xx, yy = x+step[0], y+step[1]
+        if not(0<=yy<n and 0<=xx<m):
+            return len(postions)
+        if data[yy][xx] == "#":
             ii = (ii+1)%4
             step = steps[ii]
-        else:
-            xx, yy = x+step[0], y+step[1]
-            if not(0<=yy<n and 0<=xx<m):
-                return counter
-            if data[yy][xx] != "#":
-                data[yy][xx] = "#"
-                if _traverse(x, y, ii):
-                    counter+=1
-                data[yy][xx] = "."
-        x += step[0]
-        y += step[1]
-    return counter
+            continue
+        data[yy][xx] = "#"
+        if _creates_loop(x, y, ii):
+            postions.add((xx, yy))
+        data[yy][xx] = "."
+        x = xx
+        y = yy
 
 
 if __name__ == "__main__":
-    # with open("2024/data/example_06.txt", "r", encoding="utf-8") as _file:
-    with open("2024/data/input_06.txt", "r", encoding="utf-8") as _file:
+    with open("2024/data/example_06.txt", "r", encoding="utf-8") as _file:
+    # with open("2024/data/input_06.txt", "r", encoding="utf-8") as _file:
         data_ = _file.readlines()
     # print(task_1(data_))
     print(task_2(data_))
