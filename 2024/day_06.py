@@ -47,7 +47,6 @@ def task_2(data: list[str]) -> int:
                     (bounces:=bounce_cache.get((s_x, s_y)))
                     and s_ii in bounces
                 ):
-                    print(bounce_cache)
                     return True
                 bounce_cache[(s_x, s_y)].add(s_ii)
                 s_x -= s_step[0]
@@ -71,18 +70,22 @@ def task_2(data: list[str]) -> int:
             ii = (ii+1)%4
             step = steps[ii]
         else:
-            data[y+step[1]][x+step[0]] = "#"
-            if _traverse(x, y, (ii+1)%4):
-                counter+=1
-            data[y][x] = "."
+            xx, yy = x+step[0], y+step[1]
+            if not(0<=yy<n and 0<=xx<m):
+                return counter
+            if data[yy][xx] != "#":
+                data[yy][xx] = "#"
+                if _traverse(x, y, ii):
+                    counter+=1
+                data[yy][xx] = "."
         x += step[0]
         y += step[1]
     return counter
 
 
 if __name__ == "__main__":
-    with open("2024/data/example_06.txt", "r", encoding="utf-8") as _file:
-    # with open("2024/data/input_06.txt", "r", encoding="utf-8") as _file:
+    # with open("2024/data/example_06.txt", "r", encoding="utf-8") as _file:
+    with open("2024/data/input_06.txt", "r", encoding="utf-8") as _file:
         data_ = _file.readlines()
     # print(task_1(data_))
     print(task_2(data_))
