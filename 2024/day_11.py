@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import Counter, defaultdict
 from typing import Generator, Iterable
 
 
@@ -27,10 +27,10 @@ def task_1(data: list[str]) -> int:
 
 
 def task_2(data: list[str]) -> int:
-    counter = {num: 1 for num in data[0].strip().split()}
+    counter = Counter(data[0].strip().split())
     data = counter.items()
     for _ in range(75):
-        counter = defaultdict(int)
+        counter = Counter({})
         for num, ii in _apply_rules(data):
             counter[num] += ii
         data = counter.items()
