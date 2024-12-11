@@ -56,8 +56,8 @@ def task_2(data: list[str]) -> int:
 
 
 if __name__ == "__main__":
-    # with open("2024/data/example_010.txt", "r", encoding="utf-8") as _file:
-    with open("2024/data/input_010.txt", "r", encoding="utf-8") as _file:
+    # with open("2024/data/example_10.txt", "r", encoding="utf-8") as _file:
+    with open("2024/data/input_10.txt", "r", encoding="utf-8") as _file:
         data_ = _file.readlines()
         # print(task_1(data_))
         print(task_2(data_))
