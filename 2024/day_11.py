@@ -30,7 +30,7 @@ def task_2(data: list[str]) -> int:
     counter = Counter(data[0].strip().split())
     data = counter.items()
     for _ in range(75):
-        counter = Counter({})
+        counter = Counter()
         for num, ii in _apply_rules(data):
             counter[num] += ii
         data = counter.items()
