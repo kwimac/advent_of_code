@@ -43,13 +43,10 @@ def _solve_game_2(A: list[int], B: list[int], prize: list[int]) -> int:
     py += int(1e13)
 
     b = (px*ay-ax*py)/(bx*ay-ax*by)
-    if b % 1 == 0:
+    a = (py-by*b)/ay
+    if b % 1 == 0 and a % 1 == 0:
         b = int(b)
-        a = (py-by*b)//ay
-
-        if ax/bx%1 ==0 or bx/ax%1==0:
-            if ay/by%1 ==0 or by/ay%1==0:
-                print(px, py, ax,ay, bx, by, (py-by*(px/bx))/ay)
+        a = int(a)
         return  3*a+b
     else:
         return 0
