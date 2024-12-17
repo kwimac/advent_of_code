@@ -68,7 +68,7 @@ class Maze:
     def get_seats(self) -> int:
         if self.end not in self.prev:
             return 0
-        visited = {self.end}
+        visited = {self.end, self.start}
         seats = 0
         to_check = [self.end]
         while to_check:
@@ -79,7 +79,7 @@ class Maze:
                 if pp not in visited:
                     to_check.append(pp)
                     visited.add(pp)
-            seats -= 1 if len(self.prev[p]) > 1 else 0
+            seats -= len(self.prev[p]) - 1
         seats += 1
         return seats
         
