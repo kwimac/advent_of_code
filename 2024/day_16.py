@@ -19,7 +19,7 @@ class Maze:
         n, m = len(maze), len(self.maze[0])
         self.start = (1, n-2)
         self.end = (m-2, 1)
-        self.distance = {}
+        self.distance = {self.start: 0}
         self.prev = defaultdict(set)
         self._solve_maze()
 
@@ -28,21 +28,24 @@ class Maze:
         prev = node_state[-1]
         while len(to_check) == 1:
             score, p, direction, _ = to_check.pop()
-            for ii, ds in [
-                (direction, self.STEP_SCORE), 
-                ((direction-1)%4, self.STEP_SCORE + self.TURN_SCORE), 
-                ((direction+1)%4, self.STEP_SCORE + self.TURN_SCORE)
+            goes_straight = False
+            for ii, straight in [
+                (direction, True),
+                ((direction-1)%4, False),
+                ((direction+1)%4, False)
             ]:
                 dx, dy = self.DIRECTIONS[ii]
                 xx, yy = p[0]+dx, p[1]+dy
                 if self.maze[yy][xx] != self.WALL_SYMBOL:
-                    to_check.append((score + ds, (xx, yy), ii, p))
+                    goes_straight ^= straight
+                    new_score = score + self.STEP_SCORE + (0 if straight else self.TURN_SCORE)
+                    to_check.append((new_score, (xx, yy), ii, p))
             if len(to_check) > 1 or p == self.end:
-
+                if not goes_straight and p != self.end:
+                    score += self.TURN_SCORE
                 if (
                     p not in self.distance 
                     or score  <= self.distance[p]
-                    or score - self.TURN_SCORE == self.distance[p]
                 ):
                     self.distance[p] = score
                     if score  < self.distance[p]:
@@ -55,7 +58,7 @@ class Maze:
         to_check = [(0, self.start, 0, self.start)]
         while to_check:
             node_state = heapq.heappop(to_check)
-            if node_state[0] < self.distance.get(node_state[1], float("inf")):
+            if node_state[0] <= self.distance.get(node_state[1], float("inf")):
                 for node_state in self._find_nodes(node_state):
                     heapq.heappush(to_check, node_state)
     
@@ -76,9 +79,10 @@ class Maze:
                 if pp not in visited:
                     to_check.append(pp)
                     visited.add(pp)
+            seats -= 1 if len(self.prev[p]) > 1 else 0
+        seats += 1
+        return seats
         
-
-
 
 def task_1(data: list[str]) -> int:
     return Maze(data).get_solution()
@@ -89,8 +93,8 @@ def task_2(data: list[str]) -> int:
 
 
 if __name__ == "__main__":
-    with open("2024/data/example_16.txt", "r", encoding="utf-8") as _file:
-    # with open("2024/data/input_16.txt", "r", encoding="utf-8") as _file:
+    # with open("2024/data/example_16.txt", "r", encoding="utf-8") as _file:
+    with open("2024/data/input_16.txt", "r", encoding="utf-8") as _file:
         data_ = _file.readlines()
         # print(task_1(data_))
         print(task_2(data_))
