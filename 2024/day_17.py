@@ -1,83 +1,81 @@
+from collections import deque
 import re
+from typing import Generator
 
+def _parse_data(data: list[str]) -> tuple[int, int, int, list[int]]:
+    pattern = r".*: ([0-9,]+)"
+    data = iter(data)
+    A = int(re.match(pattern, next(data)).group(1))
+    B = int(re.match(pattern, next(data)).group(1))
+    C = int(re.match(pattern, next(data)).group(1))
+    next(data)
+    program = list(map(int, re.match(pattern, next(data)).group(1).split(",")))
+    return A, B, C, program
 
-class Debugger:
-    def __init__(self, data: list[str]) -> None:
-        self._parse_input(data)
-        self._operations_map = {
-            0: self._adv,
-            1: self._bxl,
-            2: self._bst,
-            3: self._jnz,
-            4: self._bxc,
-            5: self._out,
-            6: self._bdv,
-            7: self._cdv,
-        }
-        self._output = []
-
-    def _parse_input(self, data: list[str]) -> None:
-        pattern = r".*: ([0-9,]+)"
-        data = iter(data)
-        self.a = int(re.match(pattern, next(data)).group(1))
-        self.b = int(re.match(pattern, next(data)).group(1))
-        self.c = int(re.match(pattern, next(data)).group(1))
-        next(data)
-        self.program = list(map(int, re.match(pattern, next(data)).group(1).split(",")))
-    
-    def execute(self) -> str:
-        pointer = 0
-        while pointer < len(self.program):
-            result = self._operations_map[self.program[pointer]](self.program[pointer+1])
-            pointer = result if result is not None else pointer+2
-        return ",".join(map(str, self._output))
-
-    def _map_operand(self, operand: int) -> int:
-        if operand == 4:
-            return self.a
-        if operand == 5:
-            return self.b
-        if operand == 6:
-            return self.c
-        return operand
-
-    def _adv(self, operand: int) -> None:
-        self.a //= 2**self._map_operand(operand)
-
-    def _bxl(self, operand: int) -> None:
-        self.b ^= operand
-
-    def _bst(self, operand: int) -> None:
-        self.b = self._map_operand(operand) % 8
-
-    def _jnz(self, operand: int) -> int | None:
-        if self.a != 0:
+ 
+def execute(A: int, B: int, C: int, program: list[int]) -> list[int]:
+    def _execute(A: int, B: int, C: int, program: list[int]) -> Generator[int, None, None]:
+        def get_combo(operand: int) -> int:
+            if operand == 4:
+                return A
+            if operand == 5:
+                return B
+            if operand == 6:
+                return C
             return operand
-    
-    def _bxc(self, _: int) -> None:
-        self.b ^= self.c
-    
-    def _out(self, operand: int) -> None:
-        self._output.append(self._map_operand(operand)%8)
-
-    def _bdv(self, operand: int) -> None:
-        self.b //= 2**self._map_operand(operand)
-
-    def _cdv(self, operand: int) -> None:
-        self.c //= 2**self._map_operand(operand)
+        p = 0
+        while p < len(program):
+            op, val = program[p], program[p+1]
+            if op==0:
+                A = A // 2**get_combo(val)
+                p += 2
+            elif op==1:
+                B ^= val
+                p += 2
+            elif op==2:
+                B = get_combo(val) % 8
+                p += 2
+            elif op==3:
+                p = p+2 if A == 0 else val
+            elif op==4:
+                B = B ^ C
+                p += 2
+            elif op==5:
+                yield get_combo(val) % 8
+                p += 2
+            elif op==6:
+                B = A // 2**get_combo(val)
+                p += 2
+            elif op==7:
+                C = A // 2**get_combo(val)
+                p += 2
+    return list(_execute(A, B, C, program))
 
 
 def task_1(data: list[str]) -> str:
-    return Debugger(data).execute()
+    return ",".join(map(str, execute(*_parse_data(data))))
 
 
 def task_2(data: list[str]) -> int:
-    ...
+    A, B, C, program = _parse_data(data)
+    number = ""
+    n = len(program)
+    to_check = deque([("", 1)])
+    while to_check:
+        number, jj = to_check.popleft()
+        for ii in range(8):
+            digit = f"{ii:03b}"
+            A = int(number+digit, 2)
+            if execute(A, B ,C, program) == program[-jj:]:
+                if jj+1 > n:
+                    return A
+                to_check.append((number+digit, jj+1))
+
 
 
 if __name__ == "__main__":
     # with open("2024/data/example_17.txt", "r", encoding="utf-8") as _file:
     with open("2024/data/input_17.txt", "r", encoding="utf-8") as _file:
         data_ = _file.readlines()
-        print(task_1(data_))
-        # print(task_2(data_))
+        # print(task_1(data_))
+        print(task_2(data_))
