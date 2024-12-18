@@ -54,15 +54,6 @@ class Board:
             updates.append((px,py))
             px, py = x, y
             x, y = px+dx, py+dy
-    
-
-def task_1(data: list[str]) -> int:
-    data = iter(data)
-    board = Board(takewhile(lambda x: x != "\n", data))
-    for move in chain.from_iterable(row.strip() for row in data):
-        board.move_robot(move)
-        
-    return board.sum_gps()
 
 
 class BroadBoard(Board):
@@ -97,41 +88,46 @@ class BroadBoard(Board):
 
     def move_robot(self, move: str) -> None:
         if move in "v^":
-            ...
+            self._move_robot_vertically(move)
         else:
             super().move_robot(move)
 
-    def _move_robot_vertically(self, move: str) -> Noe:
+    def _move_robot_vertically(self, move: str) -> None:
+        dx, dy = self.DIRECTIONS_MAP[move]
+        px, py = self.robot
+        to_check = deque([(px, py, px+dx, py+dy)])
+        updates = deque([])
+        while to_check:
+            px, py, x, y = to_check.popleft()
+            if (px, py, x, y) in updates:
+                continue
+            char = self.board[y][x]
+            updates.append((px,py, x, y))
+            if char == self.WALL_SYMBOL:
+                return
+            if char == self.EMPTY_SYMBOL:
+                continue
+            if char != self.board[py][px]:
+                if char == self.BOX_LEFT_SYMBOL:
+                    to_check.append((x+1, y, x+dx+1, y+dy))
+                elif char == self.BOX_RIGHT_SYMBOL:
+                    to_check.append((x-1, y, x+dx-1, y+dy))
+            to_check.append((x, y, x+dx, y+dy))
+        while updates:
+            px, py, x, y = updates.pop()
+            tmp = self.board[y][x]
+            self.board[y][x] = self.board[py][px]
+            self.board[py][px] = tmp
+        self.robot = (x,y)
 
 
-def _move_simple(board: list[list[str]], robot: tuple[int, int], move: str) -> None:
-    dx, dy = self.DIRECTIONS_MAP[move]
-    px, py = self.robot
-    x, y = px+dx, py+dy
-    updates = deque([])
-    while board[y][x] != WALL_SYMBOL:
-        if board[y][x] == EMPTY_SYMBOL:
-            while updates:
-                board[y][x] = board[py][px]
-                    if board[y][x] == BOX_LEFT_SYMBOL:
-                        board[y][x+1] = board[py][px+1]
-                    elif board[y][x] == BOX_RIGHT_SYMBOL:
-                        board[y][x-1] = board[py][px-1]
-                x, y = px, py
-                px, py = updates.pop()
-            board[y][x] = board[py][px]
-            board[py][px] = "."
-            robot = (x,y)
-            break
-        updates.append((px,py))
-        px, py = x, y
-        x, y = px+dx, py+dy
-
-
-def _get_to_check(board: list[list[str]],point: tuple[int, int], ppoint: tuple[int, int]) -> list[tuple[int, int]]:
-    x, y, px, py = point, ppoint
-    if 
-
+def task_1(data: list[str]) -> int:
+    data = iter(data)
+    board = Board(takewhile(lambda x: x != "\n", data))
+    for move in chain.from_iterable(row.strip() for row in data):
+        board.move_robot(move)
+        
+    return board.sum_gps()
 
 
 def task_2(data: list[str]) -> int:
@@ -139,13 +135,12 @@ def task_2(data: list[str]) -> int:
     board = BroadBoard(takewhile(lambda x: x != "\n", data))
     for move in chain.from_iterable(row.strip() for row in data):
         board.move_robot(move)
-        print(move)
-        pprint.pprint(board)
+    return board.sum_gps()
 
 
 if __name__ == "__main__":
-    with open("2024/data/example_15.txt", "r", encoding="utf-8") as _file:
-    # with open("2024/data/input_15.txt", "r", encoding="utf-8") as _file:
+    # with open("2024/data/example_15.txt", "r", encoding="utf-8") as _file:
+    with open("2024/data/input_15.txt", "r", encoding="utf-8") as _file:
         data_ = _file.readlines()
         # print(task_1(data_))
         print(task_2(data_))
