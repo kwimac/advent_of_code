@@ -1,5 +1,4 @@
 import heapq
-import pprint
 from typing import Generator
 
 Point = tuple[int, int]

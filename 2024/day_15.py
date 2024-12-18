@@ -1,6 +1,5 @@
 from collections import deque
 from itertools import chain, repeat, takewhile
-import pprint
 from typing import Iterable
 
 
