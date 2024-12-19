@@ -12,19 +12,19 @@ def task_1(data: list[list[str]]) -> int:
 
     x,y = _find_start(data)
     ii = 0
-    s_step = steps[ii]
+    step = steps[ii]
     visited = set()
-    while 0<=y<n and 0<=x<m:
-        if data[y][x] == "#":
-            x -= s_step[0]
-            y -= s_step[1]
-            ii = (ii+1)%4
-            s_step = steps[ii]
-            continue
+    while True:
         visited.add((x, y))
-        x += s_step[0]
-        y += s_step[1]
-    return len(visited)
+        xx, yy = x+step[0], y+step[1]
+        if not(0<=yy<n and 0<=xx<m):
+            return len(visited)
+        if data[yy][xx] == "#":
+            ii = (ii+1)%4
+            step = steps[ii]
+            continue
+        x = xx
+        y = yy
 
 
 
@@ -33,39 +33,40 @@ def task_2(data: list[str]) -> int:
     n, m = len(data), len(data[0])
     steps = [(0,-1), (1,0), (0,1), (-1,0)]
 
-    def _creates_loop(s_x: int, s_y: int, s_ii: int) -> bool:
+    def _creates_loop(x: int, y: int, ii: int) -> bool:
         visited = set()
-        s_step = steps[s_ii]
-        while 0<=s_y<n and 0<=s_x<m:
-            if data[s_y][s_x] == "#":
-                s_x -= s_step[0]
-                s_y -= s_step[1]
-                s_ii = (s_ii+1)%4
-                s_step = steps[s_ii]
-                continue
-            if (s_x, s_y, s_ii) in visited:
+        step = steps[ii]
+        while True:
+            if (x, y, ii) in visited:
                 return True
-            visited.add((s_x, s_y, s_ii))
-            s_x += s_step[0]
-            s_y += s_step[1]
-        return False
+            visited.add((x, y, ii))
+            xx, yy = x+step[0], y+step[1]
+            if not(0<=yy<n and 0<=xx<m):
+                return False
+            if data[yy][xx] == "#":
+                ii = (ii+1)%4
+                step = steps[ii]
+                continue
+            x = xx
+            y = yy
 
     ii = 0
     step = steps[ii]
-    postions = set()
-    x,y = _find_start(data)
+    positions = set()
+    x, y= start = _find_start(data)
     while True:
         xx, yy = x+step[0], y+step[1]
         if not(0<=yy<n and 0<=xx<m):
-            return len(postions)-1
+            return len(positions)
         if data[yy][xx] == "#":
             ii = (ii+1)%4
             step = steps[ii]
             continue
-        data[yy][xx] = "#"
-        if _creates_loop(x, y, ii):
-            postions.add((xx, yy))
-        data[yy][xx] = "."
+        if data[yy][xx] !="^" and (xx,yy) not in positions:
+            data[yy][xx] = "#"
+            if _creates_loop(*start, 0):
+                positions.add((xx, yy))
+            data[yy][xx] = "."
         x = xx
         y = yy
 

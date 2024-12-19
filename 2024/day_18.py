@@ -45,8 +45,8 @@ class Board:
     def _traverse(
         self,
         score: int,
-        point: Point, 
-        direction: int
+        point: Point,
+        direction: int,
     ) -> Generator[NodeState, None, None]:
         for ii in [direction, (direction-1)%4, (direction+1)%4]:
             dx, dy = self.DIRECTIONS[ii]
